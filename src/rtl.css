@@ -1,0 +1,203 @@
+/* =========================================================
+   Arabic: font and right-to-left adjustments
+   ========================================================= */
+
+html[lang='ar'] {
+  --head: 'Cairo', 'Montserrat', system-ui, sans-serif;
+  --text: 'Cairo', 'Open Sans', system-ui, sans-serif;
+}
+
+/* Arabic script must not be letter-spaced or upper-cased */
+[dir='rtl'] .eyebrow,
+[dir='rtl'] .hero-tagline,
+[dir='rtl'] .role-name,
+[dir='rtl'] .story-module,
+[dir='rtl'] .story-tag,
+[dir='rtl'] .persona-role,
+[dir='rtl'] .ind-sector,
+[dir='rtl'] .qr-label,
+[dir='rtl'] .roi-label,
+[dir='rtl'] .cmp-badge,
+[dir='rtl'] .mc-labels,
+[dir='rtl'] .dg-side h3,
+[dir='rtl'] .mega h4,
+[dir='rtl'] .footer h4,
+[dir='rtl'] .agent-num,
+[dir='rtl'] .mirror-sources h3,
+[dir='rtl'] .result span {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+[dir='rtl'] h1,
+[dir='rtl'] h2,
+[dir='rtl'] h3,
+[dir='rtl'] .title {
+  letter-spacing: 0;
+}
+
+/* direction arrows point the other way */
+[dir='rtl'] .link-arrow svg,
+[dir='rtl'] .crumbs svg,
+[dir='rtl'] .mc-more svg,
+[dir='rtl'] .ec-arrow,
+[dir='rtl'] .mp-pager svg,
+[dir='rtl'] .mp-hero-actions .link-arrow svg,
+[dir='rtl'] .mega-all svg,
+[dir='rtl'] .sf-hint svg,
+[dir='rtl'] .role-arrow svg,
+[dir='rtl'] .dg-steps svg,
+[dir='rtl'] .quiz-back svg {
+  transform: scaleX(-1);
+}
+
+/* header */
+[dir='rtl'] .nav {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir='rtl'] .header-ctas {
+  margin-left: 0;
+  margin-right: 12px;
+}
+
+@media (max-width: 1180px) {
+  [dir='rtl'] .header .menu-toggle {
+    margin-left: 0;
+    margin-right: 4px;
+  }
+}
+
+[dir='rtl'] .lm-list {
+  transform-origin: top left;
+}
+
+/* text alignment for controls that forced "left" */
+[dir='rtl'] .question,
+[dir='rtl'] .quiz-answer,
+[dir='rtl'] .faq-q,
+[dir='rtl'] .family-tab,
+[dir='rtl'] .chips button {
+  text-align: right;
+}
+
+[dir='rtl'] .q-bar {
+  left: auto;
+  right: 0;
+}
+
+/* hero */
+[dir='rtl'] .hero3d-visual {
+  margin-right: 0;
+  margin-left: calc(var(--gutter) * -1);
+}
+
+[dir='rtl'] .hero3d-glow {
+  right: auto;
+  left: -10%;
+}
+
+/* page hero decoration */
+[dir='rtl'] .ph-mark {
+  right: auto;
+  left: max(4vw, calc((100vw - var(--wrap)) / 2));
+  transform: translateY(-50%) scaleX(-1);
+}
+
+[dir='rtl'] .mp-icon {
+  right: auto;
+  left: 0;
+  transform: rotate(6deg);
+}
+
+/* flows that animate left → right must run right → left */
+[dir='rtl'] .mc-track,
+[dir='rtl'] .ho-wire,
+[dir='rtl'] .dg-flow {
+  transform: scaleX(-1);
+}
+
+[dir='rtl'] .sf-bar i,
+[dir='rtl'] .read-progress,
+[dir='rtl'] .level-bar {
+  transform-origin: right;
+}
+
+[dir='rtl'] .strike {
+  transform-origin: right;
+}
+
+/* comparison highlight sits behind the last (left-most) column */
+[dir='rtl'] .cmp-highlight {
+  right: auto;
+  left: 0;
+}
+
+/* range sliders fill from the right */
+[dir='rtl'] .slider input[type='range'] {
+  background: linear-gradient(270deg, var(--blue) var(--pct), var(--alt-2) var(--pct));
+}
+
+/* story rail labels */
+[dir='rtl'] .rail-node span {
+  left: auto;
+  right: 26px;
+}
+
+[dir='rtl'] .rail-counter {
+  left: auto;
+  right: 0;
+}
+
+[dir='rtl'] .sf-bg {
+  left: auto;
+  right: 0;
+}
+
+/* misc borders that were one-sided */
+[dir='rtl'] .modules-note,
+[dir='rtl'] .autonomy-example {
+  border-left: 0;
+  border-right: 4px solid var(--tape, var(--amber));
+}
+
+[dir='rtl'] .facts {
+  border-left: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+[dir='rtl'] .fact {
+  padding: 18px 32px 18px 0;
+}
+
+[dir='rtl'] .outcome-fact {
+  border-left: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+  padding-left: 0;
+  padding-right: 16px;
+}
+
+[dir='rtl'] .result + .result {
+  border-left: 0;
+  border-right: 1px solid #c9d9f5;
+}
+
+[dir='rtl'] .family-jump a {
+  border-left: 1px solid var(--line);
+  border-right: 4px solid var(--c);
+}
+
+[dir='rtl'] .kai-nudge {
+  border-radius: 14px 14px 14px 4px;
+}
+
+[dir='rtl'] .kai-panel {
+  transform-origin: bottom left;
+}
+
+/* keep numbers, e-mail addresses and code-like tokens readable */
+[dir='rtl'] .direct a,
+[dir='rtl'] .rate-field input {
+  direction: ltr;
+}
