@@ -123,10 +123,11 @@ export function CountUp({ to, suffix = '' }) {
 }
 
 export function useMediaQuery(query) {
-  const [match, setMatch] = useState(() => window.matchMedia(query).matches)
+  const [match, setMatch] = useState(false)
   useEffect(() => {
     const mq = window.matchMedia(query)
     const on = () => setMatch(mq.matches)
+    on()
     mq.addEventListener('change', on)
     return () => mq.removeEventListener('change', on)
   }, [query])

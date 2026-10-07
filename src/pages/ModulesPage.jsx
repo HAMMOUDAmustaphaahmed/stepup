@@ -3,12 +3,26 @@ import { ArrowRight } from 'lucide-react'
 import { PageHero, Cta } from '../components/Blocks'
 import { Icon, Reveal } from '../components/ui'
 import { MODULES, PACK_MODULES } from '../data/modules'
-import { useLang, usePageTitle } from '../i18n'
+import { useLang, useSeo } from '../i18n'
+import { pageLd } from '../seo'
+import { SITE_URL as SITE } from '../site'
 
 export default function ModulesPage() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.modules
-  usePageTitle(t.PAGES.nav[1].label)
+  const title = `${t.PAGES.allModules} — ${['audits', 'quality', 'kaizen', 'talents', 'crm'].map((s) => t.MOD[s].name).join(', ')}…`
+  useSeo({
+    title,
+    description: ui.lede,
+    jsonLd: [
+      ...pageLd({ lang, path: '/modules', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[1].label, '/modules']] }),
+      {
+        '@type': 'ItemList',
+        name: t.PAGES.allModules,
+        itemListElement: MODULES.map((m, i) => ({ '@type': 'ListItem', position: i + 1, name: t.MOD[m.slug].name, url: `${SITE}/${lang}/modules/${m.slug}` })),
+      },
+    ],
+  })
 
   return (
     <>

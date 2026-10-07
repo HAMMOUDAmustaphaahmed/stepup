@@ -5,7 +5,8 @@ import { PageHero, Cta } from '../components/Blocks'
 import { Icon, Reveal } from '../components/ui'
 import { MODULES, PACK_MODULES, NOT_IN_ENTERPRISE } from '../data/modules'
 import { DEMO_HREF } from '../content'
-import { useLang, usePageTitle } from '../i18n'
+import { useLang, useSeo } from '../i18n'
+import { breadcrumbLd, webPageLd } from '../seo'
 
 const W = 420
 const H = 300
@@ -63,12 +64,37 @@ function ConnectionMap({ module, color }) {
 
 export default function ModulePage() {
   const { slug } = useParams()
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.module
   const index = MODULES.findIndex((m) => m.slug === slug)
   const module = MODULES[index]
   const text = module && t.MOD[slug]
-  usePageTitle(text?.name)
+  const famName = module ? t.FAMILIES.find((f) => f.id === module.family).name : ''
+  const seoTitle = text ? `${text.name} — ${famName}` : ''
+  useSeo({
+    title: seoTitle,
+    description: text ? `${text.summary} ${text.features.slice(0, 2).join('. ')}.` : '',
+    jsonLd: text
+      ? [
+          webPageLd({
+            lang,
+            path: `/modules/${slug}`,
+            title: seoTitle,
+            description: text.summary,
+            about: {
+              '@type': 'SoftwareApplication',
+              name: `Stepup ${text.name}`,
+              applicationCategory: 'BusinessApplication',
+              operatingSystem: 'Web, iOS, Android',
+              description: text.summary,
+              featureList: text.features,
+            },
+          }),
+          breadcrumbLd(lang, [[t.UI.header.home, '/'], [t.PAGES.nav[1].label, '/modules'], [text.name, `/modules/${slug}`]]),
+        ]
+      : [],
+    noindex: !text,
+  })
   if (!module) return <Navigate to="/modules" replace />
 
   const fam = t.FAMILIES.find((f) => f.id === module.family)

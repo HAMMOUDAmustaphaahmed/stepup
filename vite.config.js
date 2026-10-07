@@ -17,5 +17,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     plugins: [react(), chatApi(env)],
+    // the prerenderer reads the manifest to preload each page's language chunk
+    build: { manifest: true },
   }
 })

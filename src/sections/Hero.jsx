@@ -1,9 +1,10 @@
-import { lazy, Suspense, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { CountUp } from '../components/ui'
 import Skyline from '../components/Skyline'
 import { hasWebGL, SceneBoundary } from '../three/support'
+import { Link } from 'react-router-dom'
 import { DEMO_HREF } from '../content'
 import { useLang } from '../i18n'
 
@@ -31,7 +32,24 @@ export default function Hero() {
   const ui = t.UI.hero
   const ref = useRef(null)
   const reduce = useReducedMotion()
-  const [webgl] = useState(hasWebGL)
+  const [webgl, setWebgl] = useState(false)
+  // The 3D scene is a desktop extra: phones, slow devices and data-saver mode keep the
+  // lightweight skyline. It loads after the page is idle so it never delays the content.
+  useEffect(() => {
+    const capable =
+      hasWebGL() &&
+      window.innerWidth >= 960 &&
+      !navigator.connection?.saveData &&
+      (navigator.hardwareConcurrency || 8) > 4
+    if (!capable) return
+    const start = () => setWebgl(true)
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(start, { timeout: 2500 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const id = setTimeout(start, 1200)
+    return () => clearTimeout(id)
+  }, [])
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const copyY = useTransform(scrollYProgress, [0, 1], [0, -140])
   const copyOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0])
@@ -53,12 +71,12 @@ export default function Hero() {
             {ui.lede}
           </motion.p>
           <motion.div className="hero-ctas left" {...item(3)}>
-            <a className="btn btn-solid btn-square" href={DEMO_HREF}>
+            <Link className="btn btn-solid btn-square" to={DEMO_HREF}>
               {ui.demo}
-            </a>
-            <a className="btn btn-outline btn-square" href="/pricing#roi">
+            </Link>
+            <Link className="btn btn-outline btn-square" to="/pricing#roi">
               {ui.gains}
-            </a>
+            </Link>
           </motion.div>
           <motion.dl className="hero3d-stats" {...item(4)}>
             {STATS.map((n, i) => (

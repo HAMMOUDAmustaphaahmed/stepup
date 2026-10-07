@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion'
 import { DEMO_HREF } from '../content'
+import { splitLang } from '../site'
 import { useLang } from '../i18n'
 
 // Thin reading-progress bar pinned to the top of the window.
@@ -43,7 +44,7 @@ export function LinkInterceptor() {
       const a = e.target.closest('a[href]')
       if (!a || a.target === '_blank' || a.hasAttribute('download')) return
       const href = a.getAttribute('href')
-      if (!href.startsWith('/') || href.startsWith('//')) return
+      if (!href.startsWith('/') || href.startsWith('//') || splitLang(href).lang) return
       e.preventDefault()
       navigate(href)
     }

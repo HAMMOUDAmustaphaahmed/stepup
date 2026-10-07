@@ -60,7 +60,7 @@ export default function LangMenu() {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
-        aria-label={`${t.UI.header.language}: ${current.label}`}
+        aria-label={`${current.short} — ${t.UI.header.language}: ${current.label}`}
         onClick={() => {
           setFocus(LANGUAGES.indexOf(current))
           setOpen((o) => !o)

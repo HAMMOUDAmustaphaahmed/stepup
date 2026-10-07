@@ -8,7 +8,9 @@ import StoryFrames from '../sections/StoryFrames'
 import { ZoomFrame } from '../components/Motion'
 import { Standards, Cta } from '../components/Blocks'
 import { Reveal, Title } from '../components/ui'
-import { useLang, usePageTitle } from '../i18n'
+import { useLang, useSeo } from '../i18n'
+import { orgLd, websiteLd, softwareLd, webPageLd } from '../seo'
+import { MODULES } from '../data/modules'
 
 function Explore() {
   const { t } = useLang()
@@ -40,7 +42,15 @@ function Explore() {
 }
 
 export default function Home() {
-  usePageTitle()
+  const { t, lang } = useLang()
+  useSeo({
+    jsonLd: [
+      orgLd(),
+      websiteLd(lang),
+      softwareLd({ lang, description: t.meta.description, features: MODULES.map((m) => `${t.MOD[m.slug].name}: ${t.MOD[m.slug].summary}`) }),
+      webPageLd({ lang, path: '/', title: t.meta.title, description: t.meta.description }),
+    ],
+  })
   return (
     <>
       <Hero />

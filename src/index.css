@@ -1659,6 +1659,7 @@ p {
   max-width: 34ch;
 }
 
+.footer h3,
 .footer h4 {
   color: #fff;
   font-size: 14px;

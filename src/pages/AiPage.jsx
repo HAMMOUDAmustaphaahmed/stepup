@@ -4,14 +4,16 @@ import { CircuitBoard, KeyRound, Power, Wallet, Workflow } from 'lucide-react'
 import { PageHero, Cta } from '../components/Blocks'
 import { Icon, Reveal, Title } from '../components/ui'
 import { MODULES } from '../data/modules'
-import { useLang, usePageTitle } from '../i18n'
+import { useLang, useSeo } from '../i18n'
+import { pageLd } from '../seo'
 
 const GUARD_ICONS = [KeyRound, Workflow, Wallet, Power, CircuitBoard]
 
 export default function AiPage() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.ai
-  usePageTitle(t.PAGES.nav[2].label)
+  const title = `${t.PAGES.nav[2].label} — ${ui.title[0].trim().replace(/[.:]$/, '')}`
+  useSeo({ title, description: ui.lede, jsonLd: pageLd({ lang, path: '/ai', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[2].label, '/ai']] }) })
   const capped = MODULES.filter((m) => m.aiCap != null)
 
   return (

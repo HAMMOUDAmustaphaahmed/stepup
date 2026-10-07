@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from 'framer-motion'
 import { Database, Layers, Server, ShieldCheck } from 'lucide-react'
 import { Reveal } from '../components/ui'
@@ -30,7 +30,8 @@ export default function Rollout() {
   const ROLLOUT = t.ROLLOUT
   const RISK_REDUCERS = t.RISK_REDUCERS
   const track = useRef(null)
-  const [webgl] = useState(hasWebGL)
+  const [webgl, setWebgl] = useState(false)
+  useEffect(() => setWebgl(hasWebGL()), [])
   const [active, setActive] = useState(0)
   const { scrollYProgress } = useScroll({ target: track, offset: ['start start', 'end end'] })
 

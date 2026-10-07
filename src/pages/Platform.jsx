@@ -5,7 +5,8 @@ import Mirror from '../sections/Mirror'
 import { PageHero, Cta } from '../components/Blocks'
 import { Icon, Reveal } from '../components/ui'
 import { MODULES } from '../data/modules'
-import { useLang, usePageTitle } from '../i18n'
+import { useLang, useSeo } from '../i18n'
+import { pageLd } from '../seo'
 
 const SECURITY_ICONS = [ListTree, ShieldCheck, Users, KeyRound, Eye, ScrollText, Clock, FileLock2]
 const bySlug = Object.fromEntries(MODULES.map((m) => [m.slug, m]))
@@ -132,9 +133,10 @@ function Apps() {
 }
 
 export default function Platform() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.platform
-  usePageTitle(t.PAGES.nav[0].label)
+  const title = `${t.PAGES.nav[0].label} — ${ui.title[0].trim().replace(/[.:]$/, '')}`
+  useSeo({ title, description: `${ui.lede} ${t.UI.mirror.lede}`, jsonLd: pageLd({ lang, path: '/platform', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[0].label, '/platform']] }) })
   return (
     <>
       <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[0].label]]} />

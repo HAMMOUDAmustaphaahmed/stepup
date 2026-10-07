@@ -1,55 +1,61 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import en from './content/en'
-import fr from './content/fr'
-import ar from './content/ar'
-import es from './content/es'
-import it from './content/it'
-import modulesEn from './content/modules.en'
-import modulesFr from './content/modules.fr'
-import modulesAr from './content/modules.ar'
-import modulesEs from './content/modules.es'
-import modulesIt from './content/modules.it'
+import { createContext, useContext, useEffect, useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
+import { RTL_LANGS } from './site'
+import { applyHead, buildHead } from './seo'
 
-export const LANGS = {
-  en: { ...en, MOD: modulesEn },
-  fr: { ...fr, MOD: modulesFr },
-  ar: { ...ar, MOD: modulesAr },
-  es: { ...es, MOD: modulesEs },
-  it: { ...it, MOD: modulesIt },
+// Each language is a separate chunk: visitors only download their own.
+const loaders = {
+  en: () => Promise.all([import('./content/en'), import('./content/modules.en')]),
+  fr: () => Promise.all([import('./content/fr'), import('./content/modules.fr')]),
+  ar: () => Promise.all([import('./content/ar'), import('./content/modules.ar')]),
+  es: () => Promise.all([import('./content/es'), import('./content/modules.es')]),
+  it: () => Promise.all([import('./content/it'), import('./content/modules.it')]),
 }
-export const RTL = ['ar']
-const KEY = 'stepup-lang'
-
-function initialLang() {
-  try {
-    const saved = localStorage.getItem(KEY)
-    if (saved && LANGS[saved]) return saved
-  } catch {
-    // storage blocked: fall back to the browser language
+export const LANGS = {}
+export async function loadLang(code) {
+  if (!LANGS[code]) {
+    const [content, modules] = await loaders[code]()
+    LANGS[code] = { ...content.default, MOD: modules.default }
   }
-  const nav = navigator.language?.toLowerCase().slice(0, 2)
-  return LANGS[nav] ? nav : 'en'
+  return LANGS[code]
 }
+export const PREF_KEY = 'stepup-lang'
 
-const LangContext = createContext({ lang: 'en', setLang: () => {}, t: LANGS.en, rtl: false })
+const LangContext = createContext({ lang: 'en', setLang: () => {}, t: null, rtl: false })
 
-export function LangProvider({ children }) {
-  const [lang, setLang] = useState(initialLang)
-  const rtl = RTL.includes(lang)
+// The language comes from the URL (/fr/…, /en/…). Switching language loads the
+// same page under the other prefix, so every language has its own indexable URL.
+export function LangProvider({ lang, children }) {
+  const rtl = RTL_LANGS.includes(lang)
 
   useEffect(() => {
-    try {
-      localStorage.setItem(KEY, lang)
-    } catch {
-      // not persisted; the choice still applies for this visit
-    }
-    const t = LANGS[lang]
     document.documentElement.lang = lang
     document.documentElement.dir = rtl ? 'rtl' : 'ltr'
-    document.querySelector('meta[name="description"]')?.setAttribute('content', t.meta.description)
+    try {
+      localStorage.setItem(PREF_KEY, lang)
+    } catch {
+      // preference not saved; the URL still carries the language
+    }
   }, [lang, rtl])
 
-  const value = useMemo(() => ({ lang, setLang, t: LANGS[lang], rtl }), [lang, rtl])
+  const value = useMemo(
+    () => ({
+      lang,
+      rtl,
+      t: LANGS[lang],
+      setLang: (code) => {
+        if (code === lang) return
+        try {
+          localStorage.setItem(PREF_KEY, code)
+        } catch {
+          // ignore
+        }
+        const rest = window.location.pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '')
+        window.location.assign(`/${code}${rest}${window.location.search}${window.location.hash}`)
+      },
+    }),
+    [lang, rtl],
+  )
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>
 }
 
@@ -57,10 +63,23 @@ export function useLang() {
   return useContext(LangContext)
 }
 
-// Sets the browser tab title for the current page.
-export function usePageTitle(title) {
-  const { t } = useLang()
+// ---------- Page metadata ----------
+
+// During prerendering this object collects the current page's <head> tags.
+export const SeoContext = createContext(null)
+
+export function useSeo({ title, description, jsonLd = [], noindex = false }) {
+  const { lang, t } = useLang()
+  const { pathname } = useLocation()
+  const collector = useContext(SeoContext)
+  const path = pathname === '' ? '/' : pathname
+  const isHome = path === '/'
+  const fullTitle = isHome ? t.meta.title : `${title} | Stepup`
+  const tags = buildHead({ lang, path, title: fullTitle, description: description || t.meta.description, jsonLd, noindex, isHome })
+  if (collector) collector.tags = tags
+
+  const key = JSON.stringify(tags)
   useEffect(() => {
-    document.title = title ? `${title} — Stepup` : t.meta.title
-  }, [title, t])
+    applyHead(JSON.parse(key))
+  }, [key])
 }

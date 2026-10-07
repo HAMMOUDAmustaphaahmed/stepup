@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Check, Send } from 'lucide-react'
 import { Icon, Reveal } from '../components/ui'
@@ -96,12 +97,12 @@ export default function Personas() {
                   ))}
                 </ul>
                 <div className="persona-actions">
-                  <a className="link-arrow" href={p.link[0]}>
+                  <Link className="link-arrow" to={p.link[0]}>
                     {p.link[1]} <ArrowRight size={16} aria-hidden />
-                  </a>
-                  <a className="btn btn-outline" href={shareHref(ui, p)}>
+                  </Link>
+                  <button type="button" className="btn btn-outline" onClick={() => (window.location.href = shareHref(ui, p))}>
                     <Send size={16} aria-hidden /> {p.shareTo}
-                  </a>
+                  </button>
                 </div>
               </motion.div>
             </AnimatePresence>

@@ -1,52 +1,153 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUp, MessageCircle, RotateCcw, X } from 'lucide-react'
+import { ArrowRight, ArrowUp, MessageCircle, RotateCcw, X } from 'lucide-react'
 import { useLang } from '../i18n'
+import { SITE_URL } from '../site'
+
+const SITE_HOST = new URL(SITE_URL).host.toLowerCase()
 
 const STORE = 'stepup-chat'
 
-// Minimal, safe markdown: paragraphs, "- " lists, **bold** and [label](/internal-path) links.
-function inline(text, key) {
+// ---------- Links in answers ----------
+
+// Site pages Kai may link to (without language prefix).
+const PAGE_RE = /^\/(?:platform|modules(?:\/[a-z]+)?|ai|solutions|pricing|diagnostic|faq|contact)?(?:#[\w-]+)?$/
+// A bare page path inside text, e.g. "/contact" or "/pricing#roi"
+const BARE_PATH = /(^|[\s(«"'])(\/(?:platform|modules(?:\/[a-z]+)?|ai|solutions|pricing|diagnostic|faq|contact)(?:#[\w-]+)?)(?=$|[\s).,;:!?»"'])/g
+
+// "/fr/contact", "https://www.stepup.app/en/ai", " /contact " -> "/contact" (or null if not a site page)
+function toPage(raw) {
+  let p = String(raw || '').trim()
+  const host = p.match(/^https?:\/\/([^/]+)/i)?.[1]
+  if (host) {
+    // only links to this website, never to other domains
+    const own = [SITE_HOST, typeof window !== 'undefined' ? window.location.host : ''].filter(Boolean)
+    if (!own.includes(host.toLowerCase())) return null
+    p = p.slice(p.indexOf(host) + host.length)
+  }
+  p = p.replace(/^\/(fr|en|ar|es|it)(?=\/|#|$)/, '') || '/'
+  if (!p.startsWith('/')) return null
+  p = p.replace(/\/+$/, '').replace(/\/(#)/, '$1') || '/'
+  return PAGE_RE.test(p) ? p : null
+}
+
+// A readable button label for a page, in the visitor's language.
+function labelFor(path, t) {
+  const [base, hash] = path.split('#')
+  const nav = Object.fromEntries(t.PAGES.nav.map((n) => [n.to, n.label]))
+  if (base === '/contact') return t.UI.header.demo
+  if (base === '/pricing' && hash === 'roi') return t.UI.hero.gains
+  if (base.startsWith('/modules/')) return t.MOD[base.slice(9)]?.name || nav['/modules']
+  if (base === '/modules') return t.PAGES.allModules
+  if (base === '/faq') return 'FAQ'
+  if (base === '/') return t.UI.header.home
+  return nav[base] || base
+}
+
+const looksLikePath = (s) => /^\s*(https?:\/\/|\/)/.test(s)
+
+// Inline text: **bold**, [label](path) and bare page paths become links.
+function inline(text, key, t, onNavigate) {
   const parts = []
   const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(\s*([^)\s]+)\s*\)/g
   let last = 0
   let m
-  while ((m = re.exec(text))) {
-    if (m.index > last) parts.push(text.slice(last, m.index))
-    if (m[1]) parts.push(<strong key={`${key}-b${m.index}`}>{m[1]}</strong>)
-    else if (m[3].startsWith('/')) {
+  const pushText = (s, k) => {
+    // bare paths inside plain text
+    let i = 0
+    let b
+    BARE_PATH.lastIndex = 0
+    while ((b = BARE_PATH.exec(s))) {
+      const start = b.index + b[1].length
+      if (start > i) parts.push(s.slice(i, start))
+      const page = toPage(b[2])
       parts.push(
-        <Link key={`${key}-l${m.index}`} to={m[3]}>
-          {m[2]}
+        <Link key={`${k}-p${start}`} to={page} className="kai-inline-link" onClick={onNavigate}>
+          {labelFor(page, t)}
         </Link>,
       )
-    } else parts.push(m[2])
+      i = start + b[2].length
+    }
+    if (i < s.length) parts.push(s.slice(i))
+  }
+  while ((m = re.exec(text))) {
+    if (m.index > last) pushText(text.slice(last, m.index), `${key}-t${m.index}`)
+    if (m[1]) parts.push(<strong key={`${key}-b${m.index}`}>{m[1]}</strong>)
+    else {
+      const page = toPage(m[3])
+      if (page) {
+        parts.push(
+          <Link key={`${key}-l${m.index}`} to={page} className="kai-inline-link" onClick={onNavigate}>
+            {looksLikePath(m[2]) ? labelFor(page, t) : m[2]}
+          </Link>,
+        )
+      } else parts.push(m[2])
+    }
     last = re.lastIndex
   }
-  if (last < text.length) parts.push(text.slice(last))
+  if (last < text.length) pushText(text.slice(last), `${key}-end`)
   return parts
 }
 
-function Markdown({ text }) {
+// Lines that contain nothing but links (e.g. "👉 [Demo](/contact)") become action buttons.
+function linkOnlyLine(line) {
+  const stripped = line.replace(/^[-*•]\s+/, '').replace(/👉|➡️|➡|→|▶️|▶/gu, '').trim()
+  const links = []
+  const rest = stripped
+    .replace(/\[([^\]]+)\]\(\s*([^)\s]+)\s*\)/g, (_, label, href) => {
+      const page = toPage(href)
+      if (page) links.push({ page, label: looksLikePath(label) ? null : label.trim() })
+      return page ? '' : _
+    })
+    .replace(/(^|\s)(\/[\w#/-]+)(?=\s|$)/g, (_, sp, path) => {
+      const page = toPage(path)
+      if (page) links.push({ page, label: null })
+      return page ? sp : _
+    })
+    .replace(/[\s|,·:—–-]+/g, '')
+  return links.length && !rest ? links : null
+}
+
+function Markdown({ text, t, onNavigate }) {
   const blocks = []
+  const actions = []
   let list = null
   text.split('\n').forEach((raw, i) => {
     const line = raw.trim()
+    const only = line && linkOnlyLine(line)
+    if (only) {
+      only.forEach((a) => !actions.some((x) => x.page === a.page) && actions.push(a))
+      return
+    }
     const bullet = line.match(/^[-*•]\s+(.*)/)
     if (bullet) {
       list ??= []
-      list.push(<li key={i}>{inline(bullet[1], i)}</li>)
+      list.push(<li key={i}>{inline(bullet[1], i, t, onNavigate)}</li>)
       return
     }
     if (list) {
       blocks.push(<ul key={`u${i}`}>{list}</ul>)
       list = null
     }
-    if (line) blocks.push(<p key={i}>{inline(line.replace(/^#+\s*/, ''), i)}</p>)
+    if (line) blocks.push(<p key={i}>{inline(line.replace(/^#+\s*/, ''), i, t, onNavigate)}</p>)
   })
   if (list) blocks.push(<ul key="u-end">{list}</ul>)
-  return <Fragment>{blocks}</Fragment>
+  return (
+    <Fragment>
+      {blocks}
+      {actions.length > 0 && (
+        <div className="kai-actions">
+          {actions.slice(0, 3).map((a) => (
+            <Link key={a.page} to={a.page} className="kai-action" onClick={onNavigate}>
+              {a.label || labelFor(a.page, t)}
+              <ArrowRight size={15} aria-hidden />
+            </Link>
+          ))}
+        </div>
+      )}
+    </Fragment>
+  )
 }
 
 function load() {
@@ -136,6 +237,11 @@ export default function Chatbot() {
     } finally {
       setBusy(false)
     }
+  }
+
+  // on phones the chat covers the page: close it when a link is followed
+  const onNavigate = () => {
+    if (window.matchMedia('(max-width: 760px)').matches) setOpen(false)
   }
 
   const reset = () => {
@@ -232,7 +338,7 @@ export default function Chatbot() {
 
             <div className="kai-list" ref={listRef} data-lenis-prevent aria-live="polite">
               <div className="kai-msg bot">
-                <Markdown text={ui.greeting} />
+                <Markdown text={ui.greeting} t={t} onNavigate={onNavigate} />
               </div>
               {messages.map((m, i) =>
                 m.content ? (
@@ -243,7 +349,7 @@ export default function Chatbot() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
-                    {m.role === 'user' ? m.content : <Markdown text={m.content} />}
+                    {m.role === 'user' ? m.content : <Markdown text={m.content} t={t} onNavigate={onNavigate} />}
                   </motion.div>
                 ) : null,
               )}

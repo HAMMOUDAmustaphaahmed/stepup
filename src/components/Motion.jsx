@@ -96,10 +96,9 @@ export function SplitWords({ text, className, delay = 0 }) {
   const words = String(text).split(' ')
   return (
     <span className={className}>
-      <span className="sr-only">{text}</span>
       {words.map((w, i) => (
         <Fragment key={i}>
-          <span className="sw-mask" aria-hidden>
+          <span className="sw-mask">
             <motion.span
               className="sw-word"
               initial={{ y: '110%' }}

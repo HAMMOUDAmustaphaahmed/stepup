@@ -203,7 +203,7 @@ export function Footer() {
           </div>
           {t.FOOTER.map(([title, links]) => (
             <div key={title}>
-              <h4>{title}</h4>
+              <h3>{title}</h3>
               <ul>
                 {links.map(([label, to]) => (
                   <li key={label}>

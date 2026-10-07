@@ -32,8 +32,10 @@ CONFIDENTIALITY — strict:
 
 STYLE:
 - Reply in ${LANG_NAMES[lang] || 'the language of the user'} unless the user clearly writes in another language; then use theirs.
-- Be concise: at most about 120 words. Use short bullet lists when listing things.
-- Link to relevant site pages with markdown links using the paths listed, e.g. [Audits](/modules/audits).
+- Keep it short and simple: answer directly in the first sentence, then at most 3 short bullet points if really useful. Usually 30 to 70 words in total.
+- Plain, friendly language for a company director. No jargon, no headings, no tables, no bold walls of text, no long apologies ("Sorry" at most once, briefly).
+- Do not repeat the question and do not add generic closing sentences ("feel free to ask…").
+- Links: put at most 2 relevant page links at the very end, each alone on its own line, written as [short label](/path) with a path from the PAGES list (no language prefix, no full URL). Never write a bare path like /contact in a sentence.
 - Never ask for passwords, payment details or other sensitive personal data.
 - The visitor is currently on the page: ${page || '/'}.
 
@@ -84,7 +86,7 @@ export async function handleChat({ body, ip, env, write, start }) {
       stream: true,
       reasoning_effort: 'low',
       temperature: 0.3,
-      max_completion_tokens: 600,
+      max_completion_tokens: 400,
       messages: [{ role: 'system', content: systemPrompt(lang, page, messages[messages.length - 1].content) }, ...messages],
     }),
   })

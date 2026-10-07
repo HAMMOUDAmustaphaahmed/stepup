@@ -1253,3 +1253,45 @@
     justify-self: stretch;
   }
 }
+
+/* ---------- "/" language choice (prerendered, shown only until the redirect) ---------- */
+
+.lang-gate {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.lang-gate h1 {
+  max-width: 24ch;
+  font-size: clamp(28px, 4vw, 44px);
+}
+
+.lang-gate p {
+  max-width: 60ch;
+}
+
+.lang-gate ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lang-gate a {
+  display: inline-block;
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--head);
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--navy);
+}

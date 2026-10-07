@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { animate, motion, useMotionValue, useReducedMotion } from 'framer-motion'
 import { Info } from 'lucide-react'
 import { Reveal } from '../components/ui'
+import { Link } from 'react-router-dom'
 import { DEMO_HREF } from '../content'
 import { useLang } from '../i18n'
 
@@ -176,9 +177,9 @@ export default function Roi() {
             <p className="roi-note">
               <Info size={15} aria-hidden /> {ui.note(WEEKS)}
             </p>
-            <a className="btn btn-white btn-square" href={DEMO_HREF}>
+            <Link className="btn btn-white btn-square" to={DEMO_HREF}>
               {ui.cta}
-            </a>
+            </Link>
           </div>
         </Reveal>
       </div>

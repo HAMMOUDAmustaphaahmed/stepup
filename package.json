@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:spa": "vite build",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",

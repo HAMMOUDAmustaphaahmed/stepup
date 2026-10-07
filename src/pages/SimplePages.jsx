@@ -7,12 +7,14 @@ import Rollout from '../sections/Rollout'
 import { PageHero, Industries, FaqList, Cta } from '../components/Blocks'
 import { Reveal } from '../components/ui'
 import { QUOTE_HREF } from '../content'
-import { useLang, usePageTitle } from '../i18n'
+import { useLang, useSeo } from '../i18n'
+import { faqLd, pageLd } from '../seo'
 
 export function Solutions() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.solutions
-  usePageTitle(t.PAGES.nav[3].label)
+  const title = `${t.PAGES.nav[3].label} — ${t.PERSONAS.map((p) => p.short).join(', ')}`
+  useSeo({ title, description: ui.lede, jsonLd: pageLd({ lang, path: '/solutions', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[3].label, '/solutions']] }) })
   return (
     <>
       <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[3].label]]} />
@@ -24,9 +26,10 @@ export function Solutions() {
 }
 
 export function Pricing() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.pricing
-  usePageTitle(t.PAGES.nav[4].label)
+  const title = `${t.PAGES.nav[4].label} — ${ui.title[1].trim().replace(/[.:]$/, '')}`
+  useSeo({ title, description: ui.lede, jsonLd: pageLd({ lang, path: '/pricing', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[4].label, '/pricing']] }) })
   const icons = [Users, Building2, Layers]
   return (
     <>
@@ -75,9 +78,10 @@ export function Pricing() {
 }
 
 export function DiagnosticPage() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.diagnostic
-  usePageTitle(t.PAGES.nav[5].label)
+  const title = t.UI.quiz.eyebrow
+  useSeo({ title, description: ui.lede, jsonLd: pageLd({ lang, path: '/diagnostic', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[5].label, '/diagnostic']] }) })
   return (
     <>
       <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[5].label]]} />
@@ -88,9 +92,10 @@ export function DiagnosticPage() {
 }
 
 export function FaqPage() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.faq
-  usePageTitle('FAQ')
+  const title = `FAQ — ${ui.title.join('').trim()}`
+  useSeo({ title, description: `${ui.lede} ${t.FAQ.slice(0, 3).map(([q]) => q).join(' ')}`, jsonLd: [...pageLd({ lang, path: '/faq', title, description: ui.lede, home: t.UI.header.home, crumbs: [['FAQ', '/faq']] }), faqLd(t.FAQ)] })
   return (
     <>
       <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[['FAQ']]} />
@@ -107,7 +112,7 @@ export function FaqPage() {
 export function NotFound() {
   const { t } = useLang()
   const ui = t.PAGES.notFound
-  usePageTitle(ui.title)
+  useSeo({ title: ui.title, description: ui.body, noindex: true })
   return (
     <PageHero eyebrow="404" title={ui.title} lede={ui.body}>
       <Link className="btn btn-solid btn-square" to="/" style={{ marginTop: 28 }}>

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { motion, MotionConfig } from 'framer-motion'
 import Header from './components/Header'
@@ -14,18 +15,23 @@ import { LangProvider } from './i18n'
 import { SmoothScroll } from './components/Motion'
 import Chatbot from './components/Chatbot'
 
-function Page({ children }) {
+// The first page is already in the prerendered HTML, so only later navigations fade in.
+function Page({ first, children }) {
   return (
-    <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35, ease: 'easeOut' }}>
+    <motion.main initial={first ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35, ease: 'easeOut' }}>
       {children}
     </motion.main>
   )
 }
 
-export default function App() {
+export default function App({ lang }) {
   const { pathname } = useLocation()
+  const first = useRef(true)
+  useEffect(() => {
+    first.current = false
+  }, [])
   return (
-    <LangProvider>
+    <LangProvider lang={lang}>
       <MotionConfig reducedMotion="user">
         <SmoothScroll />
         <ScrollManager />
@@ -33,7 +39,7 @@ export default function App() {
         <ProgressBar />
         <Header />
         {/* keyed on the path so each page fades in */}
-        <Page key={pathname}>
+        <Page key={pathname} first={first.current}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/platform" element={<Platform />} />

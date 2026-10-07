@@ -5,13 +5,15 @@ import { Mail, Send } from 'lucide-react'
 import { PageHero } from '../components/Blocks'
 import { Reveal } from '../components/ui'
 import { CONTACT_EMAIL } from '../content'
-import { useLang, usePageTitle } from '../i18n'
+import { useLang, useSeo } from '../i18n'
+import { pageLd } from '../seo'
 
 // Builds an e-mail from the form and opens the visitor's mail app. Nothing is sent to a server.
 export default function Contact() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const ui = t.PAGES.contact
-  usePageTitle('Contact')
+  const seoTitle = `${t.UI.header.demo} — Contact`
+  useSeo({ title: seoTitle, description: ui.lede, jsonLd: pageLd({ lang, path: '/contact', title: seoTitle, description: ui.lede, home: t.UI.header.home, crumbs: [['Contact', '/contact']] }) })
   const [params] = useSearchParams()
   const isQuote = params.get('topic') === 'quote'
   const [form, setForm] = useState({ name: '', email: '', company: '', role: '', sites: 0, interests: [], message: '' })
