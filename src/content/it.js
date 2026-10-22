@@ -480,7 +480,7 @@ const it = {
       sites: 'Numero di siti',
       siteOptions: ['1 sito', 'Da 2 a 5 siti', 'Più di 5 siti'],
       interest: 'Cosa vorreste vedere per primo?',
-      interests: ['Audit & qualità', 'Riunioni & azioni', 'Competenze & formazione', 'Dashboard per la direzione', 'Agenti IA', 'Collegamento dei sistemi esistenti'],
+      interests: ['Audit & qualità', 'Riunioni & azioni', 'Competenze & formazione', 'Dashboard per la direzione', 'Agenti IA', 'Collegamento dei sistemi esistenti', 'Modulo su misura'],
       message: 'C’è qualcosa che dovremmo sapere?',
       submit: 'Preparare la mia richiesta',
       note: 'Si aprirà il vostro programma di posta con la richiesta pronta da inviare. Nulla viene inviato finché non premete invio.',
@@ -570,6 +570,7 @@ const it = {
       today: 'Oggi',
       stepup: 'Con Stepup',
       hint: 'Continuate a scorrere per passare da una scena all’altra',
+      skip: 'Salta la storia',
     },
     roi: {
       eyebrow: 'Il vostro business case',
@@ -691,6 +692,52 @@ const it = {
       faq: 'FAQ',
     },
     sticky: { text: 'Vedete Stepup sui vostri processi', cta: 'Guarda una demo' },
+    custom: {
+      menu: 'Moduli su misura',
+      menuBody: 'Progettati per il tuo processo',
+      eyebrow: 'Moduli su misura',
+      title: 'Un processo che nessun modulo copre? Lo sviluppiamo per te.',
+      body: 'Ogni azienda ha il suo modo di lavorare. Il nostro team progetta un modulo su misura per il tuo processo, collegato agli stessi dati, cruscotti, permessi e agenti IA del resto di Stepup.',
+      points: ['Definito con il tuo team', 'Stessa sicurezza e permessi', 'Collegato agli altri moduli'],
+      cta: 'Parla del tuo modulo su misura',
+    },
+    agentStory: {
+      you: 'Tu',
+      online: 'Agente IA · online',
+      typing: 'Kai sta lavorando…',
+      approve: 'Approva',
+      approved: 'Approvato',
+      greeting: 'Ciao, sono Kai. Dimmi di cosa hai bisogno: preparo il lavoro nei tuoi moduli e tu mantieni il controllo.',
+      hint: 'Scorri per parlare con Kai',
+      skip: 'Salta la conversazione',
+      steps: [
+        {
+          ask: 'Cosa richiede la mia attenzione stamattina?',
+          reply: '14 azioni correttive sono in ritardo, 9 sulla linea 2. L’audit della linea 3 è previsto giovedì.',
+          work: '6 moduli analizzati',
+          agent: 'Agente Qualità'
+        },
+        {
+          ask: 'Pianifica l’audit della linea 3 e prepara la checklist.',
+          reply: 'Fatto: audit fissato giovedì alle 9:00 con Sarah, checklist ISO 9001 di 32 punti allegata.',
+          work: 'Audit pianificato',
+          agent: 'Agente Audit'
+        },
+        {
+          ask: 'Sollecita le azioni in ritardo della linea 2.',
+          reply: '9 solleciti sono pronti, uno per responsabile. Partono appena li approvi.',
+          work: 'In attesa della tua approvazione',
+          agent: 'Agente Qualità'
+        },
+        {
+          ask: 'Approvato. E il report del lunedì?',
+          reply: 'Pronto e condiviso con il direttore di stabilimento: 3 azioni chiuse, 2 segnalate a te, audit nei tempi.',
+          work: 'Report inviato',
+          agent: 'Orchestratore'
+        }
+      ],
+      outro: 'Gli stessi diritti tuoi, un budget che decidi tu e un pulsante di arresto — sempre.'
+    },
     chat: {
       name: 'Kai',
       role: 'Assistente Stepup',

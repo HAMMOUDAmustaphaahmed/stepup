@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CircuitBoard, KeyRound, Power, Wallet, Workflow } from 'lucide-react'
-import { PageHero, Cta } from '../components/Blocks'
+import { Cta } from '../components/Blocks'
+import AgentStory from '../sections/AgentStory'
 import { Icon, Reveal, Title } from '../components/ui'
 import { MODULES } from '../data/modules'
 import { useLang, useSeo } from '../i18n'
@@ -18,7 +19,8 @@ export default function AiPage() {
 
   return (
     <>
-      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[2].label]]} />
+      <AgentStory eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[2].label]]} />
+      <div id="after-agent" />
 
       <section className="section">
         <div className="wrap">

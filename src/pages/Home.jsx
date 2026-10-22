@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
-import Hero from '../sections/Hero'
+import PlantStory from '../sections/PlantStory'
 import Mirror from '../sections/Mirror'
 import Compare from '../sections/Compare'
 import Cockpit from '../sections/Cockpit'
-import StoryFrames from '../sections/StoryFrames'
 import { ZoomFrame } from '../components/Motion'
 import { Standards, Cta } from '../components/Blocks'
 import { Reveal, Title } from '../components/ui'
@@ -53,14 +52,14 @@ export default function Home() {
   })
   return (
     <>
-      <Hero />
+      <PlantStory />
+      <div id="after-story" />
       <Standards />
       <Mirror />
       <ZoomFrame>
         <Compare />
       </ZoomFrame>
       <Cockpit />
-      <StoryFrames />
       <Explore />
       <Cta />
     </>

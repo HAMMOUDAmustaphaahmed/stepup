@@ -1,0 +1,632 @@
+/* ==========================================================================
+   AI page: conversation with Kai (src/sections/AgentStory.jsx)
+   Static (prerender, reduced motion, no WebGL): hero text + full transcript.
+   Live (.is-live): sticky stage, 3D robot on one side, chat on the other.
+   ========================================================================== */
+
+.ag {
+  position: relative;
+  background: linear-gradient(180deg, #fbfcfe 0%, #eef3f9 100%);
+  border-bottom: 1px solid var(--line);
+}
+
+.ag-stage {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(36px, 5vw, 56px) clamp(56px, 7vw, 88px);
+}
+
+.ag-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.ag .eyebrow {
+  color: var(--blue);
+}
+
+.ag h1 {
+  max-width: 20ch;
+  font-size: clamp(32px, 4.4vw, 54px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.ag h1 .hl {
+  display: block;
+  color: var(--blue);
+}
+
+.ag-lede {
+  margin-top: 20px;
+  max-width: 54ch;
+  font-size: clamp(17px, 1.5vw, 19px);
+}
+
+.ag-hint {
+  display: block;
+  margin-top: 22px;
+  font: 700 13px/1.3 var(--head);
+  color: var(--muted);
+}
+
+.ag-hint::after {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 32px;
+  margin-top: 10px;
+  background: linear-gradient(var(--blue), transparent);
+  transform-origin: top;
+  animation: ps-hint 1.8s ease-in-out infinite;
+}
+
+/* ---------- Robot face (chat avatar) ---------- */
+
+.ag-face {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 42px;
+  height: 34px;
+  border-radius: 12px;
+  background: var(--navy);
+  box-shadow: inset 0 0 0 3px #fff, 0 0 0 1px var(--line), 0 6px 14px rgba(13, 45, 78, 0.18);
+}
+
+.ag-face::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 8px var(--amber);
+}
+
+.ag-face i {
+  width: 6px;
+  height: 11px;
+  border-radius: 4px;
+  background: #7fb0ff;
+  box-shadow: 0 0 6px #7fb0ff;
+  animation: ag-blink 4.2s infinite;
+}
+
+.ag-face.sm {
+  width: 30px;
+  height: 25px;
+  gap: 5px;
+  border-radius: 9px;
+}
+
+.ag-face.sm::before {
+  display: none;
+}
+
+.ag-face.sm i {
+  width: 4px;
+  height: 8px;
+}
+
+@keyframes ag-blink {
+  0%,
+  95%,
+  100% {
+    transform: scaleY(1);
+  }
+  97% {
+    transform: scaleY(0.15);
+  }
+}
+
+/* ---------- Chat window ---------- */
+
+.ag-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 24px 60px rgba(13, 45, 78, 0.14);
+  overflow: hidden;
+}
+
+.ag-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ag-chat-head strong {
+  display: block;
+  font: 800 15px/1.2 var(--head);
+  color: var(--navy);
+}
+
+.ag-chat-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.ag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22a06b;
+  box-shadow: 0 0 0 3px rgba(34, 160, 107, 0.18);
+}
+
+.ag-steps {
+  display: flex;
+  gap: 5px;
+  margin: 0 0 0 auto;
+  margin-inline: auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ag-steps li {
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  transition: background 0.3s;
+}
+
+.ag-steps li.on {
+  background: var(--blue);
+}
+
+.ag-log {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 18px;
+  list-style: none;
+}
+
+.ag-msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 92%;
+}
+
+.ag-msg.you {
+  align-self: flex-end;
+}
+
+.ag-bubble {
+  padding: 11px 14px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.ag-msg.bot .ag-bubble {
+  border: 1px solid var(--line);
+  border-end-start-radius: 4px;
+  background: #fff;
+  color: var(--text);
+}
+
+.ag-msg.you .ag-bubble {
+  border-end-end-radius: 4px;
+  background: var(--blue);
+  color: #fff;
+}
+
+.ag-msg.end .ag-bubble {
+  border-color: rgba(34, 160, 107, 0.4);
+  background: #effaf4;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.ag-work {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #effaf4;
+  font: 700 12px/1.3 var(--head);
+  color: #17794f;
+}
+
+.ag-work.wait {
+  background: #fff6dc;
+  color: #8a6300;
+}
+
+.ag-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: ag-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes ag-pulse {
+  50% {
+    box-shadow: 0 0 0 5px rgba(245, 180, 0, 0.25);
+  }
+}
+
+.ag-approve {
+  display: block;
+  margin-top: 10px;
+  min-height: 36px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--navy);
+  font: 700 13px/1 var(--head);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.ag-approve:hover {
+  background: var(--blue);
+  transform: translateY(-1px);
+}
+
+.ag-typing {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.ag-typing i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: ag-typing 1s ease-in-out infinite;
+}
+
+.ag-typing i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ag-typing i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes ag-typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* ---------- Live: pinned stage ---------- */
+
+.ag-track {
+  position: relative;
+}
+
+.ag.is-live .ag-stage {
+  position: sticky;
+  top: 76px;
+  height: calc(100svh - 76px);
+  min-height: 520px;
+  padding-block: clamp(20px, 4vh, 44px) clamp(56px, 8vh, 84px);
+}
+
+.ag.is-live .ag-inner {
+  height: 100%;
+  grid-template-columns: minmax(0, 470px) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.ag.is-live .ag-copy,
+.ag.is-live .ag-chat {
+  grid-column: 1;
+}
+
+.ag.is-live .ag-inner {
+  grid-template-rows: auto minmax(0, 1fr);
+  row-gap: clamp(16px, 3vh, 28px);
+}
+
+.ag.is-live h1 {
+  font-size: clamp(28px, 3.1vw, 42px);
+}
+
+.ag.is-live .ag-lede {
+  margin-top: 12px;
+  font-size: 16px;
+}
+
+.ag.is-live .crumbs {
+  margin-bottom: 14px;
+}
+
+.ag.is-live .ag-hint {
+  position: absolute;
+  inset-inline-start: calc(100% + 36px);
+  top: 50%;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.ag.is-live .ag-copy {
+  position: relative;
+}
+
+.ag.is-live .ag-chat {
+  max-height: 560px;
+}
+
+.ag.is-live .ag-log {
+  flex: 1;
+  justify-content: flex-end;
+  min-height: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 40px);
+  mask-image: linear-gradient(transparent, #000 40px);
+}
+
+.ag-visual {
+  position: absolute;
+  z-index: 1;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 58%;
+}
+
+.ag-canvas,
+.ag-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ag-canvas {
+  position: relative;
+}
+
+.ag-skip {
+  inset-inline-start: auto;
+  inset-inline-end: max(var(--gutter), (100% - var(--wrap)) / 2 + var(--gutter));
+}
+
+.ag.is-live .ps-progress {
+  display: block;
+  position: absolute;
+  z-index: 3;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(13, 45, 78, 0.08);
+}
+
+/* Floating "what Kai is doing" cards (drei <Html>) */
+.ag-card {
+  width: 210px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--blue);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 18px 40px rgba(13, 45, 78, 0.16);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.ag-card.tone-amber {
+  border-top-color: var(--amber);
+}
+
+.ag-card.tone-green {
+  border-top-color: #22a06b;
+}
+
+.ag-card-agent {
+  display: block;
+  font: 700 11px/1.3 var(--head);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ag-card strong {
+  display: block;
+  margin-top: 2px;
+  font: 800 14px/1.3 var(--head);
+  color: var(--navy);
+}
+
+.ag-card-rows {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.ag-card-rows span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ag-card-rows i {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  transition: background 0.25s, border-color 0.25s;
+}
+
+.ag-card-rows b {
+  height: 6px;
+  border-radius: 3px;
+  background: #e6edf6;
+}
+
+.ag-card-rows span.on i {
+  border-color: var(--blue);
+  background: var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat;
+}
+
+.ag-card.tone-amber .ag-card-rows span.on i {
+  border-color: var(--amber);
+  background-color: var(--amber);
+}
+
+.ag-card.tone-green .ag-card-rows span.on i {
+  border-color: #22a06b;
+  background-color: #22a06b;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-height: 760px) {
+  .ag.is-live .ag-lede {
+    display: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .ag:not(.is-live) .ag-inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  /* robot on top, conversation below */
+  .ag-visual {
+    inset-block: 0 auto;
+    inset-inline: 0;
+    width: auto;
+    height: 44%;
+  }
+
+  .ag.is-live .ag-stage {
+    padding-block: 0 16px;
+  }
+
+  .ag.is-live .ag-inner {
+    display: block;
+    position: absolute;
+    inset: 42% 0 18px;
+    height: auto;
+  }
+
+  .ag.is-live .ag-copy,
+  .ag.is-live .ag-chat {
+    position: absolute;
+    inset: 0 var(--gutter);
+  }
+
+  .ag.is-live .ag-copy {
+    z-index: 2;
+    opacity: var(--intro, 1);
+    padding-top: 8px;
+  }
+
+  .ag.is-live .ag-copy .crumbs,
+  .ag.is-live .ag-hint {
+    display: none;
+  }
+
+  .ag.is-live .ag-chat {
+    max-height: none;
+    opacity: calc(1 - var(--intro, 1));
+  }
+
+  .ag.is-live .ag-lede {
+    display: block;
+    font-size: 15px;
+  }
+
+  .ag-card {
+    width: 168px;
+    padding: 9px 11px;
+  }
+
+  .ag-card strong {
+    font-size: 12px;
+  }
+
+  .ag-card-rows {
+    display: none;
+  }
+
+  .ag-skip {
+    top: 12px;
+    bottom: auto;
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  /* leave room for the sticky demo bar */
+  .ag.is-live .ag-inner {
+    bottom: 84px;
+  }
+
+  .ag-bubble {
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-face i,
+  .ag-typing i,
+  .ag-pulse,
+  .ag-hint::after {
+    animation: none;
+  }
+}
+
+.ag-playing .kai-nudge {
+  display: none;
+}
+
+/* drei <Html> positions labels with left/translate; keep that LTR and set the text direction on the card */
+.ag-canvas {
+  direction: ltr;
+}
+
+[dir='rtl'] .ag-card {
+  direction: rtl;
+}
+
+/* static: the full transcript scrolls inside the chat window */
+.ag:not(.is-live) .ag-log {
+  max-height: 480px;
+  overflow-y: auto;
+}

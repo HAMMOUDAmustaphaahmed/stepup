@@ -1,0 +1,643 @@
+/* =========================================================
+   Home: hero + plant story told on scroll (PlantStory.jsx)
+   Static by default (prerender, no WebGL, reduced motion):
+   hero, then the chapters as cards. `.is-live` pins a 3D
+   stage under the header and scrolls the chapters over it.
+   ========================================================= */
+
+.ps {
+  position: relative;
+  background: linear-gradient(180deg, #fbfcfe 0%, #eef3f9 100%);
+  --ps-fog: 251, 252, 254;
+}
+
+.ps-stage {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-block: 40px 88px;
+}
+
+.ps-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(13, 45, 78, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 45, 78, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at 70% 30%, #000 0%, transparent 65%);
+  mask-image: radial-gradient(ellipse at 70% 30%, #000 0%, transparent 65%);
+  pointer-events: none;
+}
+
+/* Static visual: the plant skyline, on the right of the hero */
+.ps-visual {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 0;
+  width: 54%;
+  height: clamp(420px, 46vw, 640px);
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.ps-visual .hero-bg {
+  position: static;
+  transform: none;
+  width: 100%;
+}
+
+.ps-shade {
+  display: none;
+}
+
+.ps-panel {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ---------- Hero ---------- */
+
+.ps-hero {
+  min-height: min(calc(100vh - 76px - 128px), 760px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ps-hero > * {
+  max-width: 560px;
+}
+
+.ps h1 {
+  font-size: clamp(36px, 4.4vw, 58px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.ps h1 .hl {
+  display: block;
+  color: var(--blue);
+}
+
+.ps-lede {
+  margin-top: 22px;
+  font-size: clamp(17px, 1.5vw, 19px);
+  max-width: 50ch;
+}
+
+.ps-hint,
+.ps-progress {
+  display: none;
+}
+
+/* ---------- Chapters (static: cards) ---------- */
+
+.ps-story {
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(56px, 8vw, 96px);
+}
+
+.ps-head {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  text-align: center;
+  margin-bottom: clamp(32px, 4vw, 48px);
+}
+
+.ps-chapters {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
+  max-width: var(--wrap);
+  padding-inline: var(--gutter);
+}
+
+.ps-chapter {
+  max-width: none;
+  margin: 0;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.ps-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 13px/1 var(--head);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.ps-num {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.ps-chapter h3 {
+  margin: 14px 0 16px;
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.ps-compare {
+  display: grid;
+  gap: 10px;
+}
+
+.ps-compare p {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.ps-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font: 700 12px/1.2 var(--head);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ps-today {
+  background: var(--alt-2);
+  color: var(--body);
+}
+
+.ps-today .ps-label {
+  color: var(--muted);
+}
+
+.ps-stepup {
+  background: var(--blue-soft);
+  border-inline-start: 3px solid var(--blue);
+  color: var(--charcoal);
+}
+
+.ps-stepup .ps-label {
+  color: var(--blue);
+}
+
+/* ---------- Live: pinned 3D stage ---------- */
+
+.ps.is-live .ps-stage {
+  position: sticky;
+  top: 76px;
+  height: calc(100vh - 76px);
+  height: calc(100svh - 76px);
+  padding: 0;
+  display: block;
+}
+
+.ps.is-live .ps-visual {
+  inset: 0;
+  width: auto;
+  height: auto;
+  z-index: 0; /* own stacking context: the 3D labels stay under the text */
+  display: block;
+}
+
+.ps-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* The text is always read on a light veil, never directly on the 3D. */
+.ps.is-live .ps-shade {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--ps-fog), 0.97) 0%, rgba(var(--ps-fog), 0.9) 34%, rgba(var(--ps-fog), 0) 58%),
+    linear-gradient(0deg, rgba(var(--ps-fog), 0.7) 0%, rgba(var(--ps-fog), 0) 18%);
+}
+
+[dir='rtl'] .ps.is-live .ps-shade {
+  background: linear-gradient(270deg, rgba(var(--ps-fog), 0.97) 0%, rgba(var(--ps-fog), 0.9) 34%, rgba(var(--ps-fog), 0) 58%),
+    linear-gradient(0deg, rgba(var(--ps-fog), 0.7) 0%, rgba(var(--ps-fog), 0) 18%);
+}
+
+.ps.is-live .ps-panel {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  will-change: transform, opacity;
+}
+
+.ps.is-live .ps-hero {
+  top: clamp(16px, 4vh, 48px);
+  bottom: clamp(48px, 8vh, 88px);
+  min-height: 0;
+}
+
+.ps.is-live .ps-hint {
+  display: block;
+  margin-top: 28px;
+  font: 700 13px/1.3 var(--head);
+  color: var(--muted);
+}
+
+.ps.is-live .ps-hint::after {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 36px;
+  margin-top: 10px;
+  background: linear-gradient(var(--blue), transparent);
+  transform-origin: top;
+  animation: ps-hint 1.8s ease-in-out infinite;
+}
+
+@keyframes ps-hint {
+  0% {
+    transform: scaleY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+.ps.is-live .ps-story {
+  position: static;
+  margin: 0;
+}
+
+/* Story title, kept as a small kicker at the top while the chapters play */
+.ps.is-live .ps-head {
+  position: absolute;
+  z-index: 2;
+  top: clamp(16px, 4vh, 40px);
+  left: 50%;
+  translate: -50% 0;
+  width: 100%;
+  margin: 0;
+  text-align: start;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ps.is-live .ps-head .eyebrow {
+  margin-bottom: 6px;
+}
+
+.ps.is-live .ps-head .title {
+  max-width: 26em;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.ps.is-live .ps-head .title .hl {
+  color: var(--navy);
+}
+
+.ps.is-live .ps-chapters {
+  display: block;
+  padding: 0;
+  max-width: none;
+}
+
+.ps.is-live .ps-chapter {
+  top: 53%;
+  translate: -50% -50%;
+  padding: 0 var(--gutter);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.ps.is-live .ps-chapter > * {
+  max-width: 470px;
+}
+
+.ps.is-live .ps-chapter h3 {
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: 1.1;
+  margin: 16px 0 20px;
+}
+
+.ps.is-live .ps-compare p {
+  font-size: 16px;
+  box-shadow: 0 1px 2px rgba(13, 45, 78, 0.04);
+}
+
+.ps.is-live .ps-today {
+  background: rgba(238, 242, 246, 0.92);
+}
+
+.ps.is-live .ps-progress {
+  display: block;
+  position: absolute;
+  z-index: 3;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(13, 45, 78, 0.08);
+}
+
+.ps-progress i {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+[dir='rtl'] .ps-progress i {
+  transform-origin: right;
+}
+
+.ps-skip {
+  position: absolute;
+  z-index: 3;
+  bottom: 18px;
+  inset-inline-start: max(var(--gutter), (100% - var(--wrap)) / 2 + var(--gutter));
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow);
+  font: 700 13px/1 var(--head);
+  color: var(--navy);
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.ps-skip:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* ---------- 3D overlays (drei <Html>) ---------- */
+
+.ps .ps-overview-label {
+  animation: none;
+  opacity: var(--overview, 1);
+}
+
+.ps-card {
+  width: 224px;
+  padding: 12px 14px 14px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 34px -12px rgba(13, 45, 78, 0.28);
+  pointer-events: none;
+  user-select: none;
+  --tone: var(--blue);
+  --tone-soft: var(--blue-soft);
+}
+
+.ps-card.tone-amber {
+  --tone: var(--amber);
+  --tone-soft: #fff4d1;
+}
+
+.ps-card.tone-green {
+  --tone: #2f8f5b;
+  --tone-soft: #e2f3e8;
+}
+
+.ps-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font: 800 13px/1.2 var(--head);
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.ps-card-head i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 0 4px var(--tone-soft);
+}
+
+.ps-card-rows {
+  display: grid;
+  gap: 8px;
+}
+
+.ps-card-rows span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ps-card-rows b {
+  flex: none;
+  height: 8px;
+  max-width: 130px;
+  border-radius: 4px;
+  background: var(--alt-2);
+}
+
+.ps-card-rows em {
+  margin-inline-start: auto;
+  width: 38px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--tone-soft);
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-height: 780px) {
+  .ps.is-live .ps-stats,
+  .ps.is-live .ps-head .title {
+    display: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .ps-visual {
+    position: relative;
+    order: 2;
+    width: 100%;
+    height: clamp(200px, 50vw, 340px);
+    margin-top: 24px;
+  }
+
+  .ps-story {
+    order: 3;
+  }
+
+  .ps-hero {
+    min-height: 0;
+    padding-top: 24px;
+  }
+}
+
+@media (max-width: 860px) {
+  /* Text on top for the intro, at the bottom for the chapters: two veils swap with --overview */
+  .ps.is-live .ps-shade,
+  [dir='rtl'] .ps.is-live .ps-shade {
+    background: none;
+  }
+
+  .ps.is-live .ps-shade::before,
+  .ps.is-live .ps-shade::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .ps.is-live .ps-shade::before {
+    opacity: var(--overview, 1);
+    background: linear-gradient(180deg, rgba(var(--ps-fog), 0.97) 0%, rgba(var(--ps-fog), 0.92) 48%, rgba(var(--ps-fog), 0) 68%);
+  }
+
+  .ps.is-live .ps-shade::after {
+    opacity: calc(1 - var(--overview, 1));
+    background: linear-gradient(0deg, rgba(var(--ps-fog), 0.98) 0%, rgba(var(--ps-fog), 0.94) 46%, rgba(var(--ps-fog), 0) 64%),
+      linear-gradient(180deg, rgba(var(--ps-fog), 0.85) 0%, rgba(var(--ps-fog), 0) 14%);
+  }
+
+  .ps.is-live .ps-visual {
+    position: absolute;
+    margin: 0;
+  }
+
+  .ps.is-live .ps-hero {
+    top: 20px;
+    bottom: auto;
+    justify-content: flex-start;
+  }
+
+  .ps.is-live .ps-stats,
+  .ps.is-live .ps-hint,
+  .ps.is-live .ps-head .title {
+    display: none;
+  }
+
+  .ps.is-live .ps-lede {
+    margin-top: 14px;
+    font-size: 16px;
+  }
+
+  .ps.is-live .hero-ctas {
+    margin-top: 20px;
+  }
+
+  .ps.is-live .ps-chapter {
+    top: auto;
+    bottom: 76px;
+    translate: -50% 0;
+  }
+
+  .ps.is-live .ps-chapter h3 {
+    font-size: 22px;
+    margin: 10px 0 12px;
+  }
+
+  .ps.is-live .ps-compare p {
+    font-size: 14.5px;
+    padding: 10px 12px;
+  }
+
+  .ps-card {
+    width: 180px;
+  }
+
+  .ps-skip {
+    bottom: 14px;
+  }
+}
+
+/* Phones: the site's sticky demo bar takes the bottom edge, so the chapters sit above it
+   and the skip link moves to the top. */
+@media (max-width: 760px) {
+  .ps.is-live .ps-chapter {
+    bottom: 96px;
+  }
+
+  .ps-skip {
+    top: 12px;
+    bottom: auto;
+    inset-inline-start: auto;
+    inset-inline-end: var(--gutter);
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+
+  .ps.is-live .ps-head {
+    padding-inline-end: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ps.is-live .ps-lede {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ps.is-live .hero-ctas .btn {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps.is-live .ps-hint::after {
+    animation: none;
+  }
+}
+
+.ps-track {
+  position: relative;
+}
+
+.ps-anchor {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+}

@@ -17,7 +17,7 @@ export function Solutions() {
   useSeo({ title, description: ui.lede, jsonLd: pageLd({ lang, path: '/solutions', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[3].label, '/solutions']] }) })
   return (
     <>
-      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[3].label]]} />
+      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[3].label]]} scene="orbit" />
       <Personas />
       <Industries />
       <Cta />
@@ -33,7 +33,7 @@ export function Pricing() {
   const icons = [Users, Building2, Layers]
   return (
     <>
-      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[4].label]]} />
+      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[4].label]]} scene="coins" />
       <section className="section">
         <div className="wrap pricing-grid">
           <Reveal>
@@ -84,7 +84,7 @@ export function DiagnosticPage() {
   useSeo({ title, description: ui.lede, jsonLd: pageLd({ lang, path: '/diagnostic', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[5].label, '/diagnostic']] }) })
   return (
     <>
-      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[5].label]]} />
+      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[5].label]]} scene="gauge" />
       <Diagnostic bare />
       <Cta />
     </>
@@ -98,7 +98,7 @@ export function FaqPage() {
   useSeo({ title, description: `${ui.lede} ${t.FAQ.slice(0, 3).map(([q]) => q).join(' ')}`, jsonLd: [...pageLd({ lang, path: '/faq', title, description: ui.lede, home: t.UI.header.home, crumbs: [['FAQ', '/faq']] }), faqLd(t.FAQ)] })
   return (
     <>
-      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[['FAQ']]} />
+      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[['FAQ']]} scene="bubbles" />
       <section className="section">
         <div className="wrap">
           <FaqList />
@@ -114,7 +114,7 @@ export function NotFound() {
   const ui = t.PAGES.notFound
   useSeo({ title: ui.title, description: ui.body, noindex: true })
   return (
-    <PageHero eyebrow="404" title={ui.title} lede={ui.body}>
+    <PageHero eyebrow="404" title={ui.title} lede={ui.body} scene="plane">
       <Link className="btn btn-solid btn-square" to="/" style={{ marginTop: 28 }}>
         {ui.back}
       </Link>

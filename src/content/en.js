@@ -480,7 +480,7 @@ const en = {
       sites: 'Number of sites',
       siteOptions: ['1 site', '2 to 5 sites', 'More than 5 sites'],
       interest: 'What would you like to see first?',
-      interests: ['Audits & quality', 'Meetings & actions', 'Skills & training', 'Director dashboards', 'AI agents', 'Connecting existing systems'],
+      interests: ['Audits & quality', 'Meetings & actions', 'Skills & training', 'Director dashboards', 'AI agents', 'Connecting existing systems', 'Custom module'],
       message: 'Anything we should know?',
       submit: 'Prepare my request',
       note: 'This opens your e-mail app with your request ready to send. Nothing is sent until you press send.',
@@ -570,6 +570,7 @@ const en = {
       today: 'Today',
       stepup: 'With Stepup',
       hint: 'Keep scrolling to move through the frames',
+      skip: 'Skip the story',
     },
     roi: {
       eyebrow: 'Your business case',
@@ -691,6 +692,52 @@ const en = {
       faq: 'FAQ',
     },
     sticky: { text: 'See Stepup on your own workflow', cta: 'See a demo' },
+    custom: {
+      menu: 'Custom modules',
+      menuBody: 'Built for your own process',
+      eyebrow: 'Custom modules',
+      title: 'A process no module covers? We build it for you.',
+      body: 'Every company has its own way of working. Our team designs a custom module for your process, connected to the same data, dashboards, permissions and AI agents as the rest of Stepup.',
+      points: ['Scoped with your team', 'Same security and permissions', 'Linked to your other modules'],
+      cta: 'Discuss your custom module',
+    },
+    agentStory: {
+      you: 'You',
+      online: 'AI agent · online',
+      typing: 'Kai is working…',
+      approve: 'Approve',
+      approved: 'Approved',
+      greeting: 'Hi, I’m Kai. Tell me what you need — I prepare the work in your modules and you stay in control.',
+      hint: 'Scroll to talk with Kai',
+      skip: 'Skip the conversation',
+      steps: [
+        {
+          ask: 'What needs my attention this morning?',
+          reply: '14 corrective actions are overdue, 9 of them on line 2. The line 3 audit is due Thursday.',
+          work: 'Scanned 6 modules',
+          agent: 'Quality agent'
+        },
+        {
+          ask: 'Plan the line 3 audit and prepare the checklist.',
+          reply: 'Done: audit booked Thursday 9:00 with Sarah, ISO 9001 checklist of 32 points attached.',
+          work: 'Audit planned',
+          agent: 'Audits agent'
+        },
+        {
+          ask: 'Chase the overdue actions on line 2.',
+          reply: '9 reminders are drafted, one per owner. They go out as soon as you approve.',
+          work: 'Waiting for your approval',
+          agent: 'Quality agent'
+        },
+        {
+          ask: 'Approved. And the Monday report?',
+          reply: 'Ready and shared with the plant manager: 3 actions closed, 2 escalated to you, audit on track.',
+          work: 'Report sent',
+          agent: 'Orchestrator'
+        }
+      ],
+      outro: 'Same rights as you, a budget you set, and a kill switch — always.'
+    },
     chat: {
       name: 'Kai',
       role: 'Stepup assistant',

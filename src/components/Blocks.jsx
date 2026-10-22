@@ -1,18 +1,39 @@
-import { useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion, useScroll } from 'framer-motion'
 import { ArrowRight, BadgeCheck, CalendarCheck, ChevronDown, ChevronRight, Layers, Rocket } from 'lucide-react'
 import { Icon, Reveal, Logo } from './ui'
 import { SplitWords, VelocityMarquee, ZoomFrame } from './Motion'
 import { DEMO_HREF, QUOTE_HREF, STANDARDS } from '../content'
 import { useLang } from '../i18n'
+import { hasWebGL, SceneBoundary } from '../three/support'
 
-// Top of every inner page: breadcrumb, title, lede and an animated Stepup mark.
-export function PageHero({ eyebrow, title, lede, crumbs = [], accent, children }) {
+const HeroObject = lazy(() => import('../three/HeroObjects'))
+
+// Top of every inner page: breadcrumb, title, lede and an animated Stepup mark, or, when the
+// device can, a small 3D object (`scene`) that reacts to the scroll and the pointer.
+export function PageHero({ eyebrow, title, lede, crumbs = [], accent, scene, sceneIcon, children }) {
   const { t } = useLang()
+  const ref = useRef(null)
+  const reduce = useReducedMotion()
+  const [capable, setCapable] = useState(false)
+  useEffect(() => {
+    setCapable(!!scene && hasWebGL() && !navigator.connection?.saveData)
+  }, [scene])
+  const live = capable && !reduce
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   return (
-    <section className="page-hero" style={accent ? { '--accent': accent } : undefined}>
+    <section ref={ref} className={`page-hero${live ? ' has-3d' : ''}`} style={accent ? { '--accent': accent } : undefined}>
       <div className="ph-grid" aria-hidden />
+      {live && (
+        <div className="ph-3d" aria-hidden>
+          <SceneBoundary fallback={null}>
+            <Suspense fallback={null}>
+              <HeroObject kind={scene} progress={scrollYProgress} color={accent} icon={sceneIcon} />
+            </Suspense>
+          </SceneBoundary>
+        </div>
+      )}
       <svg className="ph-mark" viewBox="0 0 120 100" aria-hidden>
         <motion.path
           d="M4 94 L30 50 L42 70 L62 30 L78 60 L104 14"

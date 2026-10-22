@@ -16,7 +16,16 @@ export default function Contact() {
   useSeo({ title: seoTitle, description: ui.lede, jsonLd: pageLd({ lang, path: '/contact', title: seoTitle, description: ui.lede, home: t.UI.header.home, crumbs: [['Contact', '/contact']] }) })
   const [params] = useSearchParams()
   const isQuote = params.get('topic') === 'quote'
-  const [form, setForm] = useState({ name: '', email: '', company: '', role: '', sites: 0, interests: [], message: '' })
+  // arriving from "Custom modules" ticks that interest
+  const [form, setForm] = useState(() => ({
+    name: '',
+    email: '',
+    company: '',
+    role: '',
+    sites: 0,
+    interests: params.get('topic') === 'custom' ? [ui.interests.length - 1] : [],
+    message: '',
+  }))
   const [tried, setTried] = useState(false)
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
@@ -53,7 +62,7 @@ export default function Contact() {
 
   return (
     <>
-      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[['Contact']]} />
+      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[['Contact']]} scene="plane" />
       <section className="section alt">
         <div className="wrap contact-grid">
           <form className="contact-form" onSubmit={submit} noValidate>

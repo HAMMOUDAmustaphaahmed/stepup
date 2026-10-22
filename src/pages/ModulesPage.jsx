@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Check, Puzzle } from 'lucide-react'
 import { PageHero, Cta } from '../components/Blocks'
 import { Icon, Reveal } from '../components/ui'
 import { MODULES, PACK_MODULES } from '../data/modules'
@@ -26,7 +26,7 @@ export default function ModulesPage() {
 
   return (
     <>
-      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[1].label]]}>
+      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[1].label]]} scene="grid">
         <nav className="family-jump" aria-label={t.UI.modules.families}>
           {t.FAMILIES.map((f) => (
             <a key={f.id} href={`#${f.id}`} style={{ '--c': f.color }}>
@@ -85,6 +85,31 @@ export default function ModulesPage() {
           </div>
         </section>
       ))}
+
+      <section className="section" id="custom">
+        <div className="wrap">
+          <Reveal className="custom-band">
+            <span className="custom-icon" aria-hidden>
+              <Puzzle size={30} />
+            </span>
+            <div>
+              <span className="eyebrow">{t.UI.custom.eyebrow}</span>
+              <h2 className="title">{t.UI.custom.title}</h2>
+              <p className="lede">{t.UI.custom.body}</p>
+              <ul className="custom-points">
+                {t.UI.custom.points.map((p) => (
+                  <li key={p}>
+                    <Check size={16} aria-hidden /> {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Link className="btn btn-solid btn-square" to="/contact?topic=custom">
+              {t.UI.custom.cta}
+            </Link>
+          </Reveal>
+        </div>
+      </section>
       <Cta />
     </>
   )

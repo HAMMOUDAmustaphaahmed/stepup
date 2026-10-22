@@ -112,6 +112,8 @@ export default function ModulePage() {
         title={text.name}
         lede={text.summary}
         accent={fam.color}
+        scene="cube"
+        sceneIcon={<Icon name={module.icon} size={34} strokeWidth={1.7} />}
         crumbs={[[t.PAGES.nav[1].label, '/modules'], [text.name]]}
       >
         <div className="mp-hero-actions">

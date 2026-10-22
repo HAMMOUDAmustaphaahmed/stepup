@@ -139,7 +139,7 @@ export default function Platform() {
   useSeo({ title, description: `${ui.lede} ${t.UI.mirror.lede}`, jsonLd: pageLd({ lang, path: '/platform', title, description: ui.lede, home: t.UI.header.home, crumbs: [[t.PAGES.nav[0].label, '/platform']] }) })
   return (
     <>
-      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[0].label]]} />
+      <PageHero eyebrow={ui.eyebrow} title={ui.title} lede={ui.lede} crumbs={[[t.PAGES.nav[0].label]]} scene="stack" />
       <Mirror />
       <Links />
       <Security />

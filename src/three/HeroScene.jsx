@@ -15,11 +15,11 @@ const LINKS = [
   { at: [-2.6, 1.1, 2.2], delay: 2.2 },
 ]
 
-function Mat({ color = COLORS.wall, ...p }) {
+export function Mat({ color = COLORS.wall, ...p }) {
   return <meshStandardMaterial color={color} roughness={0.75} metalness={0.05} {...p} />
 }
 
-function SawtoothFactory({ position, instant }) {
+export function SawtoothFactory({ position, instant }) {
   const roof = useMemo(() => {
     const s = new THREE.Shape()
     const teeth = 4
@@ -68,7 +68,7 @@ function SawtoothFactory({ position, instant }) {
   )
 }
 
-function CoolingTower({ position, instant }) {
+export function CoolingTower({ position, instant }) {
   const geo = useMemo(() => {
     const pts = []
     for (let i = 0; i <= 12; i++) {
@@ -87,7 +87,7 @@ function CoolingTower({ position, instant }) {
   )
 }
 
-function Tanks({ position, instant }) {
+export function Tanks({ position, instant }) {
   return (
     <Rise position={position} delay={0.35} instant={instant}>
       {[-0.65, 0.65].map((x) => (
@@ -114,7 +114,7 @@ function Tanks({ position, instant }) {
   )
 }
 
-function Office({ position, instant }) {
+export function Office({ position, instant }) {
   return (
     <Rise position={position} delay={0.45} instant={instant}>
       <mesh position={[0, 1.25, 0]} castShadow receiveShadow>
@@ -141,7 +141,7 @@ function Office({ position, instant }) {
   )
 }
 
-function TrainingCenter({ position, instant }) {
+export function TrainingCenter({ position, instant }) {
   return (
     <Rise position={position} delay={0.55} instant={instant}>
       <mesh position={[0, 0.45, 0]} castShadow receiveShadow>
@@ -164,7 +164,7 @@ function TrainingCenter({ position, instant }) {
   )
 }
 
-function Tree({ position, s = 1 }) {
+export function Tree({ position, s = 1 }) {
   return (
     <group position={position} scale={s}>
       <mesh position={[0, 0.15, 0]} castShadow>
@@ -179,7 +179,7 @@ function Tree({ position, s = 1 }) {
   )
 }
 
-function Hub({ reduce }) {
+export function Hub({ reduce }) {
   const ring1 = useRef()
   const ring2 = useRef()
   const core = useRef()
@@ -213,7 +213,7 @@ function Hub({ reduce }) {
 }
 
 // Data packets travelling between each building and the hub.
-function Packets({ reduce }) {
+export function Packets({ reduce }) {
   const curves = useMemo(
     () =>
       LINKS.map(({ at }) => {
